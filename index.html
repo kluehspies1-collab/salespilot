@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalesPilot CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{--bg:#F7F6F2;--surface:#fff;--surface2:#F0EEE9;--border:rgba(0,0,0,0.08);--border-md:rgba(0,0,0,0.14);--text:#1A1916;--text-sec:#6B6A66;--text-hint:#A09E9A;--blue:#1A5EBF;--blue-bg:#EBF2FC;--blue-text:#0E3D80;--green-bg:#E6F4EC;--green-text:#1A4D30;--amber-bg:#FDF3E0;--amber-text:#7A4900;--teal-bg:#E1F5EE;--teal-text:#085041;--red:#B52B2B;--red-bg:#FCEAEA;--red-text:#7A1A1A;--radius:10px;--radius-sm:6px;--radius-lg:14px;--shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);--shadow-md:0 4px 12px rgba(0,0,0,0.10),0 2px 4px rgba(0,0,0,0.06)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px;width:100%;max-width:400px;box-shadow:var(--shadow-md)}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.login-logo-mark{width:40px;height:40px;background:var(--text);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px}
+.login-logo-name{font-size:18px;font-weight:600;letter-spacing:-0.01em}
+.login-logo-sub{font-size:12px;color:var(--text-hint);font-family:'DM Mono',monospace}
+.login-title{font-size:20px;font-weight:600;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--text-sec);margin-bottom:28px}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+label{font-size:12px;font-weight:600;color:var(--text-sec)}
+input,select,textarea{font-size:13px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border-color 0.15s}
+input:focus,select:focus,textarea:focus{border-color:var(--border-md);background:var(--surface)}
+textarea{resize:vertical;min-height:85px}
+.login-btn{width:100%;padding:11px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:background 0.1s}
+.login-btn:hover{background:#2D2C28}
+.login-error{font-size:12px;color:var(--red);background:var(--red-bg);padding:8px 12px;border-radius:var(--radius-sm);margin-top:10px;display:none}
+
+/* APP */
+.app{display:none}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:10}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;background:var(--text);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-name{font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text-hint);font-family:'DM Mono',monospace}
+.sidebar-nav{padding:12px 10px;flex:1;overflow-y:auto}
+.nav-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-hint);padding:0 10px;margin:12px 0 6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-sec);font-size:13px;font-weight:500;transition:background 0.1s,color 0.1s;user-select:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--text);color:#fff}
+.nav-item i{font-size:16px}
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border)}
+.user-info{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--blue-bg);color:var(--blue-text);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.user-name{font-size:13px;font-weight:500;color:var(--text)}
+.user-role{font-size:11px;color:var(--text-hint)}
+.logout-btn{width:100%;padding:7px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-sec);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background 0.1s}
+.logout-btn:hover{background:var(--surface2)}
+.sync-indicator{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-hint);margin-bottom:8px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#22C55E}
+.sync-dot.syncing{background:#F59E0B;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.page-title{font-size:16px;font-weight:600;letter-spacing:-0.01em;flex:1}
+.region-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+
+.search-wrap{position:relative}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-hint);font-size:15px;pointer-events:none}
+.search-input{padding:8px 12px 8px 34px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;width:220px;outline:none;transition:border-color 0.15s}
+.search-input:focus{border-color:var(--border-md)}
+.filter-select{padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer}
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-md);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.1s;white-space:nowrap}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--text);color:#fff;border-color:var(--text)}
+.btn.primary:hover{background:#2D2C28}
+.btn.danger{color:var(--red);border-color:var(--red-bg);background:var(--red-bg)}
+.btn.danger:hover{background:#f5d0d0}
+
+.content{padding:24px 28px;flex:1}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-hint);margin-bottom:6px}
+.stat-val{font-size:26px;font-weight:600;letter-spacing:-0.02em;color:var(--text);line-height:1}
+.stat-sub{font-size:11px;color:var(--text-hint);margin-top:4px}
+.stat-card.accent{background:var(--text)}
+.stat-card.accent .stat-label{color:rgba(255,255,255,0.5)}
+.stat-card.accent .stat-val{color:#fff}
+.stat-card.accent .stat-sub{color:rgba(255,255,255,0.4)}
+
+.pipeline{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.phase-col{background:var(--surface2);border-radius:var(--radius);padding:14px;min-height:220px}
+.phase-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.phase-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.phase-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;flex:1}
+.phase-count{font-size:11px;font-family:'DM Mono',monospace;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1px 8px;color:var(--text-sec)}
+
+.lead-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;margin-bottom:7px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s;box-shadow:var(--shadow)}
+.lead-card:hover{box-shadow:var(--shadow-md);border-color:var(--border-md)}
+.lead-top{display:flex;align-items:flex-start;gap:9px}
+.lead-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.lead-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.lead-company{font-size:11px;color:var(--text-sec)}
+.lead-meta{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+.lead-value{font-size:11px;font-weight:600;font-family:'DM Mono',monospace;color:var(--blue-text);background:var(--blue-bg);padding:2px 7px;border-radius:20px}
+.lead-owner-badge{font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:3px}
+.lead-date-badge{font-size:11px;margin-left:auto;display:flex;align-items:center;gap:3px;color:var(--text-hint)}
+.lead-date-badge.overdue{color:var(--red);font-weight:600}
+.lead-activity{margin-top:7px;padding-top:7px;border-top:1px solid var(--border);font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:4px}
+.lead-activity.overdue{color:var(--red)}
+.region-tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;margin-left:auto}
+
+.empty-col{text-align:center;padding:28px 0;color:var(--text-hint);font-size:12px}
+.empty-col i{font-size:28px;display:block;margin-bottom:6px;opacity:0.4}
+.lost-section{margin-top:8px}
+.lost-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-hint);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.lost-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+
+.list-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.4fr 40px;gap:10px;padding:0 14px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-hint)}
+.list-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.4fr 40px;align-items:center;gap:10px;cursor:pointer;margin-bottom:5px;transition:box-shadow 0.12s,border-color 0.12s;box-shadow:var(--shadow)}
+.list-row:hover{box-shadow:var(--shadow-md);border-color:var(--border-md)}
+.phase-pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-block}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--text-hint);font-size:15px;padding:5px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;transition:color 0.12s,background 0.12s}
+.del-btn:hover{color:var(--red);background:var(--red-bg)}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);width:96%;max-width:580px;max-height:92vh;overflow-y:auto;padding:28px;box-shadow:var(--shadow-md);animation:slideUp 0.18s ease}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.modal-title{font-size:16px;font-weight:600;letter-spacing:-0.01em}
+.close-btn{background:none;border:none;cursor:pointer;color:var(--text-hint);font-size:20px;padding:3px;display:flex;align-items:center;border-radius:var(--radius-sm)}
+.close-btn:hover{color:var(--text);background:var(--surface2)}
+.section-divider{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-hint);margin:18px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row.full{grid-template-columns:1fr}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;font-size:13px;font-weight:500;padding:10px 20px;border-radius:var(--radius);box-shadow:var(--shadow-md);z-index:999;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.toast.error{background:var(--red)}
+.loading-bar{position:fixed;top:0;left:0;right:0;height:2px;background:var(--text);z-index:999;transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+.loading-bar.active{transform:scaleX(0.7)}
+.loading-bar.done{transform:scaleX(1);opacity:0;transition:transform 0.2s,opacity 0.3s 0.2s}
+
+.readonly-notice{background:var(--amber-bg);color:var(--amber-text);font-size:12px;padding:8px 14px;border-radius:var(--radius-sm);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.notes-log{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;margin-bottom:10px}
+.note-entry{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px}
+.note-meta{font-size:11px;color:var(--text-hint);margin-bottom:3px;display:flex;gap:8px}
+.note-meta strong{color:var(--text-sec)}
+.note-text{font-size:13px;color:var(--text);line-height:1.5}
+.note-input-wrap{display:flex;gap:8px;align-items:flex-end}
+.note-input-wrap textarea{flex:1;min-height:60px}
+.add-note-btn{padding:8px 14px;white-space:nowrap;height:fit-content}
+
+@media(max-width:900px){.sidebar{width:180px}.main{margin-left:180px}.pipeline{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.sidebar{display:none}.main{margin-left:0}.pipeline{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="loading-bar" id="loading-bar"></div>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark"><i class="ti ti-bolt" aria-hidden="true"></i></div>
+      <div>
+        <div class="login-logo-name">SalesPilot</div>
+        <div class="login-logo-sub">CRM · SchwörerHaus</div>
+      </div>
+    </div>
+    <div class="login-title">Willkommen zurück</div>
+    <div class="login-sub">Bitte melde dich mit deinen Zugangsdaten an.</div>
+    <div class="form-group">
+      <label>E-Mail</label>
+      <input type="email" id="login-email" placeholder="deine@email.de" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Passwort</label>
+      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="doLogin()"><i class="ti ti-login" aria-hidden="true"></i> Anmelden</button>
+    <div class="login-error" id="login-error">E-Mail oder Passwort falsch. Bitte erneut versuchen.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app-wrap">
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark"><i class="ti ti-bolt" aria-hidden="true"></i></div>
+      <div>
+        <div class="logo-name">SalesPilot</div>
+        <div class="logo-sub">CRM · v3.0</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="sync-indicator"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Verbunden</span></div>
+      <div class="user-info" id="user-info"></div>
+      <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout" aria-hidden="true"></i> Abmelden</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title" id="page-title">Pipeline</span>
+      <div id="region-filter-wrap"></div>
+      <div class="search-wrap">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input class="search-input" type="text" placeholder="Lead suchen..." id="search-input" oninput="updateSearchClear();render()" style="padding-right:28px">
+        <button id="search-clear" onclick="clearSearch()" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-hint);font-size:14px;padding:2px;line-height:1"><i class="ti ti-x" aria-hidden="true"></i></button>
+      </div>
+      <select class="filter-select" id="filter-phase" onchange="render()">
+        <option value="">Alle Phasen</option>
+        <option value="Bearbeitung über Brigitte">Bearb. Brigitte</option>
+        <option value="Grundriss über Michael">Grundriss Michael</option>
+        <option value="Angebot über Kevin">Angebot Kevin</option>
+        <option value="Termin">Termin</option>
+        <option value="Warte auf Rückmeldung">Warte auf Rückmeldung</option>
+        <option value="Nachgreifen">Nachgreifen</option>
+        <option value="Grundriss erstellen">Grundriss erstellen</option>
+        <option value="Pause">Pause</option>
+        <option value="Gewonnen">Gewonnen</option>
+        <option value="Verloren">Verloren</option>
+      </select>
+      <button class="btn" onclick="loadLeads()" title="Aktualisieren"><i class="ti ti-refresh" aria-hidden="true"></i></button>
+      <button class="btn primary" id="add-btn" onclick="openModal()" style="display:none"><i class="ti ti-plus" aria-hidden="true"></i> Lead hinzufügen</button>
+    </div>
+    <div class="content">
+      <div id="readonly-notice" style="display:none" class="readonly-notice"><i class="ti ti-eye" aria-hidden="true"></i> Du hast nur Lesezugriff – du siehst ausschließlich abgeschlossene Leads.</div>
+      <div class="stats-row" id="stats-row"></div>
+      <div id="main-view"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Neuer Lead</span>
+      <button class="close-btn" onclick="closeModal()"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="section-divider">Kontaktdaten</div>
+    <div class="form-row">
+      <div class="form-group"><label>Vorname</label><input type="text" id="f-firstname" placeholder="Max"></div>
+      <div class="form-group"><label>Nachname</label><input type="text" id="f-lastname" placeholder="Mustermann"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Bauadresse</label><input type="text" id="f-company" placeholder="Musterstr. 1, 90xxx Nürnberg"></div>
+      <div class="form-group"><label>E-Mail</label><input type="email" id="f-email" placeholder="max@beispiel.de"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Telefon</label><input type="text" id="f-phone" placeholder="+49 89 ..."></div>
+      <div class="form-group"><label>Angebotswert (€)</label><input type="number" id="f-value" placeholder="5000"></div>
+    </div>
+    <div class="section-divider">Sales-Status</div>
+    <div class="form-row">
+      <div class="form-group"><label>Phase</label>
+        <select id="f-phase">
+          <option>Bearbeitung über Brigitte</option>
+          <option>Grundriss über Michael</option>
+          <option>Angebot über Kevin</option>
+          <option>Termin</option>
+          <option>Warte auf Rückmeldung</option>
+          <option>Nachgreifen</option>
+          <option>Grundriss erstellen</option>
+          <option>Pause</option>
+          <option>Gewonnen</option>
+          <option>Verloren</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Zuständig</label>
+        <div id="f-owner-wrap" style="display:flex;flex-direction:column;gap:6px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg)">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:400;color:var(--text);cursor:pointer"><input type="checkbox" value="Kevin" class="owner-cb" onchange="updateRegionFromOwner()"> Kevin</label>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:400;color:var(--text);cursor:pointer"><input type="checkbox" value="Michael" class="owner-cb" onchange="updateRegionFromOwner()"> Michael</label>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:400;color:var(--text);cursor:pointer"><input type="checkbox" value="Brigitte" class="owner-cb" onchange="updateRegionFromOwner()"> Brigitte</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Region</label>
+        <select id="f-region">
+          <option value="nuernberg">Nürnberg</option>
+          <option value="regensburg">Regensburg</option>
+          <option value="muenchen">München</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Termin</label><input type="date" id="f-date"></div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group"><label>Nächste Aktivität</label><input type="text" id="f-activity" placeholder="z.B. Demo-Call, Follow-up..."></div>
+    </div>
+    <div class="section-divider">Notizen & Verlauf</div>
+    <div class="form-row full">
+      <div class="form-group">
+        <div class="notes-log" id="notes-log"></div>
+        <div class="note-input-wrap">
+          <textarea id="f-new-note" placeholder="Neue Notiz eingeben..."></textarea>
+          <button class="btn add-note-btn" onclick="addNote()"><i class="ti ti-plus" aria-hidden="true"></i> Hinzufügen</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn danger" id="del-btn" onclick="deleteCurrent()" style="display:none"><i class="ti ti-trash" aria-hidden="true"></i> Löschen</button>
+      <div style="flex:1"></div>
+      <button class="btn" onclick="closeModal()">Abbrechen</button>
+      <button class="btn primary" onclick="saveLead()"><i class="ti ti-check" aria-hidden="true"></i> Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://xbwpvhmskxajwkwofngi.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhid3B2aG1za3hhandrd29mbmdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyMTE5MDAsImV4cCI6MjA5NTc4NzkwMH0.Cqg0wB8nRzHVQSVmoVAGeMHTJi-SoSyeiDgUbNnrJ2c';
+
+const PHASE_COLORS={
+  'Bearbeitung über Brigitte':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Brigitte'},
+  'Grundriss über Michael':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Michael'},
+  'Angebot über Kevin':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Kevin'},
+  'Termin':{dot:'#3B82F6',bg:'#EBF2FC',text:'#0E3D80',cardBg:'#BFDBFE'},
+  'Warte auf Rückmeldung':{dot:'#22C55E',bg:'#E6F4EC',text:'#1A4D30',cardBg:'#BBF7D0'},
+  'Nachgreifen':{dot:'#8B5CF6',bg:'#EDE9FE',text:'#4C1D95',cardBg:'#DDD6FE',highlightOwner:null},
+  'Grundriss erstellen':{dot:'#F97316',bg:'#FEF3C7',text:'#92400E',cardBg:'#FDE68A',highlightOwner:null},
+  'Pause':{dot:'#9CA3AF',bg:'#F3F4F6',text:'#4B5563',cardBg:'#E5E7EB',highlightOwner:null},
+  'Gewonnen':{dot:'#22C55E',bg:'#E6F4EC',text:'#1A4D30',cardBg:null},
+  'Verloren':{dot:'#EF4444',bg:'#FCEAEA',text:'#7A1A1A',cardBg:null},
+};
+const AVATAR_COLORS=[{bg:'#EBF2FC',text:'#0E3D80'},{bg:'#E1F5EE',text:'#085041'},{bg:'#FDF3E0',text:'#7A4900'},{bg:'#FCEAEA',text:'#7A1A1A'},{bg:'#EDE9FE',text:'#4C1D95'}];
+const REGION_COLORS={nuernberg:{bg:'#EBF2FC',text:'#0E3D80',label:'Nürnberg'},regensburg:{bg:'#E1F5EE',text:'#085041',label:'Regensburg'},muenchen:{bg:'#EDE9FE',text:'#4C1D95',label:'München'}};
+
+let currentUser=null;
+let currentNotes=[];
+let userRole=null;
+let leads=[];
+let currentView='pipeline';
+let editId=null;
+let ownerFilter='';
+let regionFilter='';
+let authToken=null;
+
+function avatarColor(s){let h=0;for(let c of s)h+=c.charCodeAt(0);return AVATAR_COLORS[h%AVATAR_COLORS.length];}
+function initials(f,l){return((f||'')[0]||'')+((l||'')[0]||'');}
+function fmt(v){return v?'€'+parseInt(v).toLocaleString('de-DE'):'—';}
+function fmtDate(d){if(!d)return'';return new Date(d).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'});}
+function isOverdue(d){if(!d)return false;const t=new Date();t.setHours(0,0,0,0);return new Date(d)<t;}
+
+function setSyncing(on){
+  const dot=document.getElementById('sync-dot');
+  const label=document.getElementById('sync-label');
+  if(on){dot.classList.add('syncing');label.textContent='Sync...';}
+  else{dot.classList.remove('syncing');label.textContent='Verbunden';}
+}
+function setLoading(on){
+  const bar=document.getElementById('loading-bar');
+  if(on){bar.classList.add('active');bar.classList.remove('done');}
+  else{bar.classList.remove('active');bar.classList.add('done');setTimeout(()=>bar.classList.remove('done'),500);}
+}
+
+async function apiAuth(method,path,body,token){
+  const headers={'Content-Type':'application/json','apikey':SUPABASE_KEY};
+  if(token) headers['Authorization']='Bearer '+token;
+  else headers['Authorization']='Bearer '+SUPABASE_KEY;
+  const opts={method,headers};
+  if(body) opts.body=JSON.stringify(body);
+  const res=await fetch(SUPABASE_URL+path,opts);
+  const text=await res.text();
+  return text?JSON.parse(text):null;
+}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  const errEl=document.getElementById('login-error');
+  errEl.style.display='none';
+  setLoading(true);
+  try{
+    const data=await apiAuth('POST','/auth/v1/token?grant_type=password',{email,password});
+    if(!data||data.error||!data.access_token){
+      errEl.style.display='block';
+      return;
+    }
+    authToken=data.access_token;
+    currentUser=data.user;
+    await loadUserRole();
+    showApp();
+  }catch(e){
+    errEl.style.display='block';
+  }finally{
+    setLoading(false);
+  }
+}
+
+async function loadUserRole(){
+  const data=await apiAuth('GET','/rest/v1/user_roles?user_id=eq.'+currentUser.id+'&select=*',null,authToken);
+  if(data&&data.length>0){
+    userRole=data[0];
+  } else {
+    userRole={name:currentUser.email,role:'readonly',region:'none'};
+  }
+}
+
+function canEdit(){return userRole&&(userRole.role==='admin'||userRole.role==='sales');}
+function canSeeRegion(region){
+  if(!userRole) return false;
+  if(userRole.role==='admin') return true;
+  if(userRole.role==='readonly'){
+    if(userRole.region==='nuernberg'&&region==='nuernberg') return true;
+    if(userRole.region==='regensburg'&&region==='regensburg') return true;
+    return false;
+  }
+  if(userRole.region==='both') return true;
+  // Brigitte can see all regions (filtered by ownership in getFiltered)
+  if(userRole.name==='Brigitte') return true;
+  return userRole.region===region;
+}
+
+function showApp(){
+  document.getElementById('login-wrap').style.display='none';
+  document.getElementById('app-wrap').style.display='block';
+  buildSidebar();
+  if(canEdit()){
+    document.getElementById('add-btn').style.display='flex';
+    document.getElementById('readonly-notice').style.display='none';
+  } else {
+    document.getElementById('readonly-notice').style.display='flex';
+  }
+  buildRegionFilter();
+  loadLeads();
+  setInterval(loadLeads,30000);
+}
+
+function buildSidebar(){
+  const nav=document.getElementById('sidebar-nav');
+  const isAdmin=userRole.role==='admin';
+  const isSales=userRole.role==='sales';
+  let html=`<div class="nav-label">Ansichten</div>
+    <div class="nav-item active" onclick="setView('pipeline',this)"><i class="ti ti-layout-columns" aria-hidden="true"></i> Pipeline</div>
+    <div class="nav-item" onclick="setView('list',this)"><i class="ti ti-list" aria-hidden="true"></i> Alle Leads</div>`;
+  if(isAdmin||isSales){
+    html+=`<div class="nav-label">Team</div>
+      <div class="nav-item" onclick="setOwnerFilter('Kevin',this)"><i class="ti ti-user" aria-hidden="true"></i> Kevin</div>
+      <div class="nav-item" onclick="setOwnerFilter('Michael',this)"><i class="ti ti-user" aria-hidden="true"></i> Michael</div>
+      <div class="nav-item" onclick="setOwnerFilter('Brigitte',this)"><i class="ti ti-user" aria-hidden="true"></i> Brigitte</div>
+      <div class="nav-label">Regionen</div>
+      <div class="nav-item" onclick="setRegionFilter('nuernberg',this)"><i class="ti ti-map-pin" aria-hidden="true"></i> Nürnberg</div>
+      <div class="nav-item" onclick="setRegionFilter('regensburg',this)"><i class="ti ti-map-pin" aria-hidden="true"></i> Regensburg</div>
+      <div class="nav-item" onclick="setRegionFilter('muenchen',this)"><i class="ti ti-map-pin" aria-hidden="true"></i> München</div>`;
+  }
+  nav.innerHTML=html;
+
+  const userInfo=document.getElementById('user-info');
+  const av=avatarColor(userRole.name);
+  const roleLabel=userRole.role==='admin'?'Admin':userRole.role==='sales'?'Vertrieb':'Lesezugriff';
+  userInfo.innerHTML=`<div class="user-avatar" style="background:${av.bg};color:${av.text}">${(userRole.name[0]||'').toUpperCase()}</div>
+    <div><div class="user-name">${userRole.name}</div><div class="user-role">${roleLabel}</div></div>`;
+}
+
+function buildRegionFilter(){
+  const wrap=document.getElementById('region-filter-wrap');
+  if(userRole.role==='admin'){
+    wrap.innerHTML=`<div style="position:relative;display:inline-block">
+      <button class="filter-select" onclick="toggleRegionMenu(event)" id="region-btn" style="display:flex;align-items:center;gap:6px;cursor:pointer">
+        <i class="ti ti-map-pin" style="font-size:14px"></i>
+        <span id="region-btn-label">Alle Regionen</span>
+        <i class="ti ti-chevron-down" style="font-size:12px"></i>
+      </button>
+      <div id="region-menu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);z-index:50;min-width:160px;padding:6px">
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;cursor:pointer;font-size:13px;border-radius:4px;color:var(--text)" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+          <input type="checkbox" value="nuernberg" class="region-cb" onchange="updateRegionFilter()"> Nürnberg
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;cursor:pointer;font-size:13px;border-radius:4px;color:var(--text)" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+          <input type="checkbox" value="regensburg" class="region-cb" onchange="updateRegionFilter()"> Regensburg
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;cursor:pointer;font-size:13px;border-radius:4px;color:var(--text)" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+          <input type="checkbox" value="muenchen" class="region-cb" onchange="updateRegionFilter()"> München
+        </label>
+      </div>
+    </div>`;
+  } else {
+    wrap.innerHTML='';
+  }
+}
+
+async function doLogout(){
+  await apiAuth('POST','/auth/v1/logout',{},authToken);
+  authToken=null;currentUser=null;userRole=null;leads=[];
+  document.getElementById('login-wrap').style.display='flex';
+  document.getElementById('app-wrap').style.display='none';
+  document.getElementById('login-password').value='';
+}
+
+async function api(method,path,body){
+  setSyncing(true);
+  try{
+    const headers={'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+authToken};
+    if(method==='GET'||method==='DELETE') headers['Prefer']='';
+    if(method==='POST') headers['Prefer']='return=representation';
+    if(method==='PATCH') headers['Prefer']='return=representation';
+    const opts={method,headers};
+    if(body) opts.body=JSON.stringify(body);
+    const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,opts);
+    if(!res.ok){const e=await res.text();throw new Error(e);}
+    const text=await res.text();
+    return text?JSON.parse(text):null;
+  }finally{setSyncing(false);}
+}
+
+async function loadLeads(){
+  setLoading(true);
+  try{
+    let query='leads?select=*&order=created_at.desc';
+    if(userRole.role==='readonly'){
+      query+='&phase=eq.Gewonnen&region=eq.'+userRole.region;
+    }
+    const data=await api('GET',query);
+    leads=(data||[]).filter(l=>canSeeRegion(l.region||'nuernberg'));
+    // Sort by date: leads with upcoming date first, then no date
+    leads.sort((a,b)=>{
+      if(a.date&&b.date) return new Date(a.date)-new Date(b.date);
+      if(a.date&&!b.date) return -1;
+      if(!a.date&&b.date) return 1;
+      return 0;
+    });
+    render();
+  }catch(e){showToast('Verbindungsfehler',true);}
+  finally{setLoading(false);}
+}
+
+function getFiltered(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  const owner=ownerFilter||(document.getElementById('filter-owner')?.value||'');
+  const phase=document.getElementById('filter-phase').value||'';
+  const regions=Array.isArray(regionFilter)?regionFilter:(regionFilter?[regionFilter]:[]);
+  return leads.filter(l=>{
+    const name=(l.firstname+' '+l.lastname+' '+(l.company||'')).toLowerCase();
+    const owners=(l.owner||'').split(',').map(s=>s.trim());
+    const myName=userRole.name;
+    const isAdmin=userRole.role==='admin';
+    if(!isAdmin&&!owners.includes(myName)) return false;
+    return(!q||name.includes(q))&&(!owner||owners.includes(owner))&&(!phase||l.phase===phase)&&(!regions.length||regions.includes(l.region));
+  });
+}
+
+function setView(v,el){
+  currentView=v;ownerFilter='';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('page-title').textContent=v==='pipeline'?'Pipeline':'Alle Leads';
+  render();
+}
+
+function setOwnerFilter(owner,el){
+  currentView='list';ownerFilter=owner;regionFilter='';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('page-title').textContent='Leads – '+owner;
+  render();
+}
+
+function setRegionFilter(region,el){
+  currentView='list';regionFilter=[region];ownerFilter='';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const rc=REGION_COLORS[region];
+  document.getElementById('page-title').textContent='Region – '+(rc?rc.label:region);
+  render();
+}
+
+function toggleRegionMenu(e){
+  e.stopPropagation();
+  const menu=document.getElementById('region-menu');
+  menu.style.display=menu.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',()=>{
+  const menu=document.getElementById('region-menu');
+  if(menu) menu.style.display='none';
+});
+function updateRegionFilter(){
+  const checked=[...document.querySelectorAll('.region-cb:checked')].map(cb=>cb.value);
+  regionFilter=checked;
+  const label=document.getElementById('region-btn-label');
+  if(!checked.length) label.textContent='Alle Regionen';
+  else if(checked.length===1) label.textContent={nuernberg:'Nürnberg',regensburg:'Regensburg',muenchen:'München'}[checked[0]];
+  else label.textContent=checked.length+' Regionen';
+  render();
+}
+
+function clearSearch(){
+  document.getElementById('search-input').value='';
+  document.getElementById('search-clear').style.display='none';
+  render();
+}
+function updateSearchClear(){
+  const val=document.getElementById('search-input').value;
+  document.getElementById('search-clear').style.display=val?'block':'none';
+}
+
+function renderStats(){
+  const f=getFiltered();
+  const vol=f.reduce((s,l)=>s+(parseFloat(l.value)||0),0);
+  const won=f.filter(l=>l.phase==='Gewonnen').length;
+  const open=f.filter(l=>!['Gewonnen','Verloren'].includes(l.phase)).length;
+  const wr=f.length?Math.round(won/f.length*100):0;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Leads gesamt</div><div class="stat-val">${f.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Offen</div><div class="stat-val">${open}</div></div>
+    <div class="stat-card"><div class="stat-label">Gewonnen</div><div class="stat-val">${won}</div><div class="stat-sub">Win-Rate ${wr}%</div></div>
+    <div class="stat-card accent"><div class="stat-label">Gesamtvolumen</div><div class="stat-val" style="font-size:20px">${fmt(vol)}</div><div class="stat-sub">gefiltert</div></div>`;
+}
+
+function renderCard(l){
+  const av=avatarColor(l.firstname+l.lastname);
+  const ov=isOverdue(l.date)&&l.activity;
+  const rc=REGION_COLORS[l.region||'nuernberg'];
+  const showRegion=userRole.role==='admin'||userRole.region==='both';
+  const pc=PHASE_COLORS[l.phase]||{dot:'#A09E9A',bg:'#F0EEE9',text:'#6B6A66',cardBg:null};
+  const owners=(l.owner||'').split(',').map(s=>s.trim());
+  let cardBg='';
+  // Phase-fixed colors
+  if(l.phase==='Pause'){
+    cardBg='background:#E5E7EB;border-color:#D1D5DB;'; // always grey
+  } else if(l.phase==='Termin'){
+    cardBg='background:#DBEAFE;border-color:#BFDBFE;'; // always soft blue
+  } else if(l.phase==='Warte auf Rückmeldung'){
+    cardBg='background:#DCFCE7;border-color:#BBF7D0;'; // always soft green
+  } else if(l.date){
+    // Date-based coloring for all other phases
+    const today=new Date(); today.setHours(0,0,0,0);
+    const due=new Date(l.date); due.setHours(0,0,0,0);
+    const diff=Math.ceil((due-today)/(1000*60*60*24));
+    if(diff<=0)       cardBg='background:#FEE2E2;border-color:#FECACA;'; // overdue - soft red
+    else if(diff<=3)  cardBg='background:#FEF08A;border-color:#FDE047;'; // 1-3 days - yellow
+    else if(diff<=5)  cardBg='background:#FEF9C3;border-color:#FEF08A;'; // 4-5 days - soft yellow
+    // 6+ days = no color (cardBg stays empty)
+  } else if(pc.cardBg){
+    if(pc.highlightOwner){
+      if(owners.includes(pc.highlightOwner)) cardBg=`background:${pc.cardBg};border-color:${pc.cardBg};`;
+    } else {
+      cardBg=`background:${pc.cardBg};border-color:${pc.cardBg};`;
+    }
+  }
+  return`<div class="lead-card" style="${cardBg}" onclick="openModal('${l.id}')">
+    <div class="lead-top">
+      <div class="lead-avatar" style="background:${av.bg};color:${av.text}">${initials(l.firstname,l.lastname)}</div>
+      <div style="flex:1;min-width:0"><div class="lead-name">${l.firstname||''} ${l.lastname||''}</div><div class="lead-company">${l.company||'—'}</div></div>
+      ${showRegion?`<span class="region-tag" style="background:${rc.bg};color:${rc.text}">${rc.label}</span>`:''}
+    </div>
+    <div class="lead-meta">
+      ${l.value?`<span class="lead-value">${fmt(l.value)}</span>`:''}
+      <span class="lead-owner-badge"><i class="ti ti-user" aria-hidden="true" style="font-size:11px"></i>${l.owner||''}</span>
+      ${l.date?`<span class="lead-date-badge ${ov?'overdue':''}"><i class="ti ti-calendar" aria-hidden="true" style="font-size:11px"></i>${fmtDate(l.date)}</span>`:''}
+    </div>
+    ${l.activity?`<div class="lead-activity ${ov?'overdue':''}"><i class="ti ti-arrow-right" aria-hidden="true" style="font-size:11px"></i>${l.activity}</div>`:''}
+  </div>`;
+}
+
+function render(){
+  renderStats();
+  const filtered=getFiltered();
+  const el=document.getElementById('main-view');
+  if(currentView==='pipeline'){
+    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Bearbeitung über Brigitte','Grundriss über Michael','Grundriss erstellen','Angebot über Kevin','Termin','Warte auf Rückmeldung','Nachgreifen','Pause'];
+    let html='<div class="pipeline">';
+    mainPhases.forEach(p=>{
+      const c=PHASE_COLORS[p]||{dot:'#A09E9A'};
+      const items=filtered.filter(l=>l.phase===p);
+      if(!items.length) return; // hide empty columns
+      html+=`<div class="phase-col"><div class="phase-header"><div class="phase-dot" style="background:${c.dot}"></div><span class="phase-title">${p}</span><span class="phase-count">${items.length}</span></div>${items.map(renderCard).join('')}</div>`;
+    });
+    html+='</div>';
+    if(userRole.role!=='readonly'){
+      const won=filtered.filter(l=>l.phase==='Gewonnen');
+      if(won.length)html+=`<div class="lost-section" style="margin-top:20px"><div class="lost-title" style="color:#1A4D30"><i class="ti ti-trophy" aria-hidden="true" style="font-size:13px"></i> Gewonnen (${won.length})</div><div class="lost-grid">${won.map(renderCard).join('')}</div></div>`;
+      const lost=filtered.filter(l=>l.phase==='Verloren');
+      if(lost.length)html+=`<div class="lost-section"><div class="lost-title"><i class="ti ti-x" aria-hidden="true" style="font-size:13px"></i> Verloren (${lost.length})</div><div class="lost-grid">${lost.map(renderCard).join('')}</div></div>`;
+    }
+    el.innerHTML=html;
+  }else{
+    if(!filtered.length){el.innerHTML='<div style="text-align:center;padding:60px 0;color:var(--text-hint)"><i class="ti ti-search" style="font-size:40px;display:block;margin-bottom:12px;opacity:0.3"></i>Keine Leads gefunden</div>';return;}
+    const showRegion=userRole.role==='admin'||userRole.region==='both';
+    el.innerHTML=`<div class="list-header"><span>Name / Bauadresse</span><span>Phase</span>${showRegion?'<span>Region</span>':''}<span>Wert</span><span>Zuständig</span><span>Nächste Aktivität</span><span></span></div>
+    <div>${filtered.map(l=>{
+      const c=PHASE_COLORS[l.phase]||PHASE_COLORS['Neu'];
+      const ov=isOverdue(l.date)&&l.activity;
+      const rc=REGION_COLORS[l.region||'nuernberg'];
+      return`<div class="list-row" onclick="openModal('${l.id}')">
+        <div><div style="font-size:13px;font-weight:600">${l.firstname||''} ${l.lastname||''}</div><div style="font-size:11px;color:var(--text-sec)">${l.company||'—'}</div></div>
+        <span class="phase-pill" style="background:${c.bg};color:${c.text}">${l.phase}</span>
+        ${showRegion?`<span class="phase-pill" style="background:${rc.bg};color:${rc.text}">${rc.label}</span>`:''}
+        <span style="font-size:13px;font-weight:600;font-family:'DM Mono',monospace;color:var(--blue-text)">${fmt(l.value)}</span>
+        <span style="font-size:13px;color:var(--text-sec)">${l.owner||''}</span>
+        <div>${l.activity?`<div style="font-size:12px;color:${ov?'var(--red)':'var(--text-sec)'}">${l.activity}</div>`:''} ${l.date?`<div style="font-size:11px;color:${ov?'var(--red)':'var(--text-hint)'}">${fmtDate(l.date)}</div>`:''} ${!l.activity&&!l.date?'—':''}</div>
+        ${canEdit()?`<button class="del-btn" onclick="event.stopPropagation();deleteById('${l.id}')" aria-label="Löschen"><i class="ti ti-trash" aria-hidden="true"></i></button>`:'<span></span>'}
+      </div>`;
+    }).join('')}</div>`;
+  }
+}
+
+function getSelectedOwners(){
+  return [...document.querySelectorAll('.owner-cb:checked')].map(cb=>cb.value);
+}
+function updateRegionFromOwner(){
+  const owners=getSelectedOwners();
+  const region=document.getElementById('f-region');
+  if(owners.length>0&&owners.every(o=>o==='Michael'||o==='Brigitte')) region.value='nuernberg';
+}
+
+function openModal(id){
+  if(!canEdit()) return;
+  editId=id||null;
+  const delBtn=document.getElementById('del-btn');
+  if(id){
+    const l=leads.find(x=>x.id===id);
+    if(!l)return;
+    document.getElementById('modal-title').textContent=l.firstname+' '+l.lastname+' bearbeiten';
+    document.getElementById('f-firstname').value=l.firstname||'';
+    document.getElementById('f-lastname').value=l.lastname||'';
+    document.getElementById('f-company').value=l.company||'';
+    document.getElementById('f-email').value=l.email||'';
+    document.getElementById('f-phone').value=l.phone||'';
+    document.getElementById('f-value').value=l.value||'';
+    document.getElementById('f-phase').value=l.phase||'Neu';
+    const savedOwners=(l.owner||'Kevin').split(', ').map(s=>s.trim());
+    document.querySelectorAll('.owner-cb').forEach(cb=>{cb.checked=savedOwners.includes(cb.value);});
+    document.getElementById('f-region').value=l.region||'nuernberg';
+    document.getElementById('f-activity').value=l.activity||'';
+    const dateVal = l.date || '';
+    if(dateVal){
+      const due = new Date(dateVal); due.setHours(0,0,0,0);
+      const today = new Date(); today.setHours(0,0,0,0);
+      if(due < today){
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth()+1).padStart(2,'0');
+        const dd = String(today.getDate()).padStart(2,'0');
+        document.getElementById('f-date').value = `${yyyy}-${mm}-${dd}`;
+      } else {
+        document.getElementById('f-date').value = dateVal;
+      }
+    } else {
+      document.getElementById('f-date').value = '';
+    }
+    try{ currentNotes=JSON.parse(l.notes||'[]'); if(!Array.isArray(currentNotes)) throw 1; } catch(e){ currentNotes=l.notes?[{author:'System',date:new Date().toISOString(),text:l.notes}]:[]; }
+    renderNotesLog();
+    delBtn.style.display='flex';
+  }else{
+    document.getElementById('modal-title').textContent='Neuer Lead';
+    ['f-firstname','f-lastname','f-company','f-email','f-phone','f-value','f-activity','f-date'].forEach(fid=>document.getElementById(fid).value='');
+    currentNotes=[];
+    renderNotesLog();
+    document.getElementById('f-phase').value='Neu';
+    document.querySelectorAll('.owner-cb').forEach(cb=>{cb.checked=cb.value===userRole.name;});
+    document.getElementById('f-region').value=userRole.region==='regensburg'?'regensburg':'nuernberg';
+    delBtn.style.display='none';
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('f-firstname').focus(),80);
+}
+
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+
+async function saveLead(){
+  const fn=document.getElementById('f-firstname').value.trim();
+  if(!fn){document.getElementById('f-firstname').focus();return;}
+  const data={firstname:fn,lastname:document.getElementById('f-lastname').value.trim(),company:document.getElementById('f-company').value.trim(),email:document.getElementById('f-email').value.trim(),phone:document.getElementById('f-phone').value.trim(),value:document.getElementById('f-value').value||null,phase:document.getElementById('f-phase').value,owner:getSelectedOwners().join(', '),region:document.getElementById('f-region').value,activity:document.getElementById('f-activity').value.trim(),date:document.getElementById('f-date').value||null,notes:currentNotes ? JSON.stringify(currentNotes) : '[]'};
+  setLoading(true);
+  try{
+    if(editId){await api('PATCH','leads?id=eq.'+editId,data);showToast('Lead aktualisiert');}
+    else{await api('POST','leads',data);showToast('Lead hinzugefügt');}
+    closeModal();await loadLeads();
+  }catch(e){showToast('Fehler: '+e.message,true);}
+  finally{setLoading(false);}
+}
+
+async function deleteById(id){
+  if(!confirm('Lead wirklich löschen?'))return;
+  setLoading(true);
+  try{await api('DELETE','leads?id=eq.'+id);showToast('Lead gelöscht');await loadLeads();}
+  catch(e){showToast('Fehler: '+e.message,true);}
+  finally{setLoading(false);}
+}
+
+async function deleteCurrent(){
+  if(!editId)return;
+  if(!confirm('Lead wirklich löschen?'))return;
+  closeModal();await deleteById(editId);
+}
+
+function renderNotesLog(){
+  const log=document.getElementById('notes-log');
+  if(!log) return;
+  if(!currentNotes.length){log.innerHTML='<div style="font-size:12px;color:var(--text-hint);padding:4px 0">Noch keine Notizen vorhanden.</div>';return;}
+  log.innerHTML=currentNotes.slice().reverse().map(n=>`<div class="note-entry">
+    <div class="note-meta"><strong>${n.author||'Unbekannt'}</strong><span>${new Date(n.date).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span></div>
+    <div class="note-text">${n.text}</div>
+  </div>`).join('');
+}
+
+function addNote(){
+  const ta=document.getElementById('f-new-note');
+  const text=ta.value.trim();
+  if(!text) return;
+  currentNotes.push({author:userRole.name,date:new Date().toISOString(),text});
+  ta.value='';
+  renderNotesLog();
+}
+
+function showToast(msg,error=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(error?' error':'');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeModal();
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){document.getElementById('search-input')?.focus();e.preventDefault();}
+  if(e.key==='Enter'&&document.getElementById('login-wrap').style.display!=='none')doLogin();
+});
+</script>
+</body>
+</html>
