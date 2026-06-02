@@ -179,6 +179,10 @@ textarea{resize:vertical;min-height:85px}
       <label>Passwort</label>
       <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
     </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;margin-top:-4px">
+      <input type="checkbox" id="remember-me" style="width:16px;height:16px;cursor:pointer;accent-color:var(--blue)">
+      <label for="remember-me" style="font-size:13px;color:var(--text-sec);cursor:pointer;font-weight:400">Passwort merken</label>
+    </div>
     <button class="login-btn" onclick="doLogin()"><i class="ti ti-login" aria-hidden="true"></i> Anmelden</button>
     <div class="login-error" id="login-error">E-Mail oder Passwort falsch. Bitte erneut versuchen.</div>
   </div>
@@ -278,6 +282,7 @@ textarea{resize:vertical;min-height:85px}
           <label style="display:flex;align-items:center;gap:8px;font-weight:400;color:var(--text);cursor:pointer"><input type="checkbox" value="Kevin" class="owner-cb" onchange="updateRegionFromOwner()"> Kevin</label>
           <label style="display:flex;align-items:center;gap:8px;font-weight:400;color:var(--text);cursor:pointer"><input type="checkbox" value="Michael" class="owner-cb" onchange="updateRegionFromOwner()"> Michael</label>
           <label style="display:flex;align-items:center;gap:8px;font-weight:400;color:var(--text);cursor:pointer"><input type="checkbox" value="Brigitte" class="owner-cb" onchange="updateRegionFromOwner()"> Brigitte</label>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:400;color:var(--text);cursor:pointer"><input type="checkbox" value="Johann" class="owner-cb" onchange="updateRegionFromOwner()"> Johann</label>
         </div>
       </div>
     </div>
@@ -376,6 +381,7 @@ async function apiAuth(method,path,body,token){
 async function doLogin(){
   const email=document.getElementById('login-email').value.trim();
   const password=document.getElementById('login-password').value;
+  const remember=document.getElementById('remember-me').checked;
   const errEl=document.getElementById('login-error');
   errEl.style.display='none';
   setLoading(true);
@@ -387,6 +393,13 @@ async function doLogin(){
     }
     authToken=data.access_token;
     currentUser=data.user;
+    if(remember){
+      localStorage.setItem('sp_email', email);
+      localStorage.setItem('sp_pw', password);
+    } else {
+      localStorage.removeItem('sp_email');
+      localStorage.removeItem('sp_pw');
+    }
     await loadUserRole();
     showApp();
   }catch(e){
@@ -447,6 +460,7 @@ function buildSidebar(){
       <div class="nav-item" onclick="setOwnerFilter('Kevin',this)"><i class="ti ti-user" aria-hidden="true"></i> Kevin</div>
       <div class="nav-item" onclick="setOwnerFilter('Michael',this)"><i class="ti ti-user" aria-hidden="true"></i> Michael</div>
       <div class="nav-item" onclick="setOwnerFilter('Brigitte',this)"><i class="ti ti-user" aria-hidden="true"></i> Brigitte</div>
+      <div class="nav-item" onclick="setOwnerFilter('Johann',this)"><i class="ti ti-user" aria-hidden="true"></i> Johann</div>
       <div class="nav-label">Regionen</div>
       <div class="nav-item" onclick="setRegionFilter('nuernberg',this)"><i class="ti ti-map-pin" aria-hidden="true"></i> Nürnberg</div>
       <div class="nav-item" onclick="setRegionFilter('regensburg',this)"><i class="ti ti-map-pin" aria-hidden="true"></i> Regensburg</div>
