@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -665,7 +665,7 @@ function render(){
   const filtered=getFiltered();
   const el=document.getElementById('main-view');
   if(currentView==='pipeline'){
-    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Bearbeitung über Brigitte','Grundriss über Michael','Grundriss erstellen','Angebot über Kevin','Termin','Warte auf Rückmeldung','Nachgreifen','Pause'];
+    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Termin','Grundriss über Michael','Grundriss erstellen','Angebot über Kevin','Warte auf Rückmeldung','Nachgreifen','Bearbeitung über Brigitte','Pause'];
     let html='<div class="pipeline">';
     mainPhases.forEach(p=>{
       const c=PHASE_COLORS[p]||{dot:'#A09E9A'};
