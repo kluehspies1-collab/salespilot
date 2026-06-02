@@ -832,6 +832,20 @@ function showToast(msg,error=false){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
+// Passwort merken - beim Laden automatisch ausfüllen
+(function(){
+  const savedEmail=localStorage.getItem('sp_email');
+  const savedPw=localStorage.getItem('sp_pw');
+  if(savedEmail&&savedPw){
+    const e1=document.getElementById('login-email');
+    const e2=document.getElementById('login-password');
+    const e3=document.getElementById('remember-me');
+    if(e1)e1.value=savedEmail;
+    if(e2)e2.value=savedPw;
+    if(e3)e3.checked=true;
+  }
+})();
+
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')closeModal();
   if((e.ctrlKey||e.metaKey)&&e.key==='k'){document.getElementById('search-input')?.focus();e.preventDefault();}
