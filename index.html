@@ -141,6 +141,22 @@ textarea{resize:vertical;min-height:85px}
 .loading-bar.active{transform:scaleX(0.7)}
 .loading-bar.done{transform:scaleX(1);opacity:0;transition:transform 0.2s,opacity 0.3s 0.2s}
 
+.pdf-section{margin-top:8px}
+.pdf-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.pdf-item{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px}
+.pdf-icon{font-size:18px;color:var(--red);flex-shrink:0}
+.pdf-name{font-size:12px;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pdf-date{font-size:11px;color:var(--text-hint);flex-shrink:0}
+.pdf-open{font-size:11px;color:var(--blue);cursor:pointer;text-decoration:none;flex-shrink:0}
+.pdf-open:hover{text-decoration:underline}
+.pdf-del{background:none;border:none;cursor:pointer;color:var(--text-hint);font-size:14px;padding:2px;flex-shrink:0}
+.pdf-del:hover{color:var(--red)}
+.pdf-upload-area{border:1.5px dashed var(--border-md);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:border-color .15s;position:relative}
+.pdf-upload-area:hover{border-color:var(--blue)}
+.pdf-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.pdf-upload-label{font-size:13px;color:var(--text-sec)}
+.pdf-upload-label span{color:var(--blue);font-weight:500}
+.pdf-uploading{font-size:12px;color:var(--text-hint);margin-top:6px}
 .readonly-notice{background:var(--amber-bg);color:var(--amber-text);font-size:12px;padding:8px 14px;border-radius:var(--radius-sm);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .notes-log{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;margin-bottom:10px}
 .note-entry{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px}
@@ -316,6 +332,18 @@ textarea{resize:vertical;min-height:85px}
         </div>
       </div>
     </div>
+    <div class="section-divider">Dokumente (PDF)</div>
+    <div class="form-row full">
+      <div class="form-group">
+        <div class="pdf-list" id="pdf-list"></div>
+        <div class="pdf-upload-area" id="pdf-upload-area">
+          <input type="file" id="pdf-input" accept=".pdf" multiple onchange="handlePdfUpload(this)">
+          <div class="pdf-upload-label">📎 PDF hier ablegen oder <span>auswählen</span></div>
+          <div class="pdf-uploading" id="pdf-uploading" style="display:none">⏳ Wird hochgeladen...</div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-footer">
       <button class="btn danger" id="del-btn" onclick="deleteCurrent()" style="display:none"><i class="ti ti-trash" aria-hidden="true"></i> Löschen</button>
       <div style="flex:1"></div>
@@ -348,6 +376,7 @@ const REGION_COLORS={nuernberg:{bg:'#EBF2FC',text:'#0E3D80',label:'Nürnberg'},r
 
 let currentUser=null;
 let currentNotes=[];
+let currentDocs=[];
 let userRole=null;
 let leads=[];
 let currentView='pipeline';
@@ -768,12 +797,16 @@ function openModal(id){
     }
     try{ currentNotes=JSON.parse(l.notes||'[]'); if(!Array.isArray(currentNotes)) throw 1; } catch(e){ currentNotes=l.notes?[{author:'System',date:new Date().toISOString(),text:l.notes}]:[]; }
     renderNotesLog();
+    try{ currentDocs=JSON.parse(l.docs||'[]'); if(!Array.isArray(currentDocs)) throw 1; } catch(e){ currentDocs=[]; }
+    renderPdfList();
     delBtn.style.display='flex';
   }else{
     document.getElementById('modal-title').textContent='Neuer Lead';
     ['f-firstname','f-lastname','f-company','f-email','f-phone','f-value','f-activity','f-date'].forEach(fid=>document.getElementById(fid).value='');
     currentNotes=[];
     renderNotesLog();
+    currentDocs=[];
+    renderPdfList();
     document.getElementById('f-phase').value='Neu';
     document.querySelectorAll('.owner-cb').forEach(cb=>{cb.checked=cb.value===userRole.name;});
     document.getElementById('f-region').value=userRole.region==='regensburg'?'regensburg':'nuernberg';
@@ -789,7 +822,8 @@ function closeModalOutside(e){if(e.target===document.getElementById('modal-overl
 async function saveLead(){
   const fn=document.getElementById('f-firstname').value.trim();
   if(!fn){document.getElementById('f-firstname').focus();return;}
-  const data={firstname:fn,lastname:document.getElementById('f-lastname').value.trim(),company:document.getElementById('f-company').value.trim(),email:document.getElementById('f-email').value.trim(),phone:document.getElementById('f-phone').value.trim(),value:document.getElementById('f-value').value||null,phase:document.getElementById('f-phase').value,owner:getSelectedOwners().join(', '),region:document.getElementById('f-region').value,activity:document.getElementById('f-activity').value.trim(),date:document.getElementById('f-date').value||null,notes:currentNotes ? JSON.stringify(currentNotes) : '[]'};
+  const data={firstname:fn,lastname:document.getElementById('f-lastname').value.trim(),company:document.getElementById('f-company').value.trim(),email:document.getElementById('f-email').value.trim(),phone:document.getElementById('f-phone').value.trim(),value:document.getElementById('f-value').value||null,phase:document.getElementById('f-phase').value,owner:getSelectedOwners().join(', '),region:document.getElementById('f-region').value,activity:document.getElementById('f-activity').value.trim(),date:document.getElementById('f-date').value||null,notes:currentNotes ? JSON.stringify(currentNotes) : '[]',
+    docs:currentDocs ? JSON.stringify(currentDocs) : '[]'};
   setLoading(true);
   try{
     if(editId){await api('PATCH','leads?id=eq.'+editId,data);showToast('Lead aktualisiert');}
@@ -811,6 +845,64 @@ async function deleteCurrent(){
   if(!editId)return;
   if(!confirm('Lead wirklich löschen?'))return;
   closeModal();await deleteById(editId);
+}
+
+function renderPdfList(){
+  const el=document.getElementById('pdf-list');
+  if(!el) return;
+  if(!currentDocs.length){el.innerHTML='';return;}
+  el.innerHTML=currentDocs.map((d,i)=>`<div class="pdf-item">
+    <span class="pdf-icon">📄</span>
+    <span class="pdf-name" title="${d.name}">${d.name}</span>
+    <span class="pdf-date">${new Date(d.date).toLocaleDateString('de-DE')}</span>
+    <a class="pdf-open" href="${d.url}" target="_blank">Öffnen</a>
+    ${canEdit()?`<button class="pdf-del" onclick="deletePdf(${i})" title="Entfernen">✕</button>`:''}
+  </div>`).join('');
+}
+
+async function handlePdfUpload(input){
+  const files=Array.from(input.files);
+  if(!files.length) return;
+  const uploading=document.getElementById('pdf-uploading');
+  uploading.style.display='block';
+  for(const file of files){
+    if(file.size>10*1024*1024){showToast('Max. 10MB pro Datei',true);continue;}
+    const fileName=Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const path=`${editId||'new'}/${fileName}`;
+    try{
+      // Upload to Supabase Storage
+      const formData=new FormData();
+      formData.append('',file);
+      const res=await fetch(`${SUPABASE_URL}/storage/v1/object/leads-documents/${path}`,{
+        method:'POST',
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+authToken},
+        body:file
+      });
+      if(res.ok){
+        const url=`${SUPABASE_URL}/storage/v1/object/public/leads-documents/${path}`;
+        currentDocs.push({name:file.name,url,path,date:new Date().toISOString()});
+        renderPdfList();
+        showToast(file.name+' hochgeladen');
+      } else {
+        showToast('Fehler beim Hochladen',true);
+      }
+    }catch(e){showToast('Upload fehlgeschlagen',true);}
+  }
+  uploading.style.display='none';
+  input.value='';
+}
+
+async function deletePdf(idx){
+  const doc=currentDocs[idx];
+  if(!doc) return;
+  try{
+    await fetch(`${SUPABASE_URL}/storage/v1/object/leads-documents/${doc.path}`,{
+      method:'DELETE',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+authToken}
+    });
+  }catch(e){}
+  currentDocs.splice(idx,1);
+  renderPdfList();
 }
 
 function renderNotesLog(){
