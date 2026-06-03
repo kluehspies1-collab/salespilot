@@ -224,7 +224,7 @@ textarea{resize:vertical;min-height:85px}
         <option value="Termin">Termin</option>
         <option value="Warte auf Rückmeldung">Warte auf Rückmeldung</option>
         <option value="Nachgreifen">Nachgreifen</option>
-        <option value="Grundriss erstellen">Grundriss erstellen</option>
+        <option value="Neue Anfrage">Neue Anfrage</option>
         <option value="Pause">Pause</option>
         <option value="Gewonnen">Gewonnen</option>
         <option value="Verloren">Verloren</option>
@@ -271,7 +271,7 @@ textarea{resize:vertical;min-height:85px}
           <option>Termin</option>
           <option>Warte auf Rückmeldung</option>
           <option>Nachgreifen</option>
-          <option>Grundriss erstellen</option>
+          <option>Neue Anfrage</option>
           <option>Pause</option>
           <option>Gewonnen</option>
           <option>Verloren</option>
@@ -294,7 +294,14 @@ textarea{resize:vertical;min-height:85px}
           <option value="muenchen">München</option>
         </select>
       </div>
-      <div class="form-group"><label>Termin</label><input type="date" id="f-date"></div>
+      <div class="form-group"><label>Termin</label>
+        <div style="position:relative;display:flex;align-items:center">
+          <input type="date" id="f-date" style="flex:1;padding-right:32px">
+          <button onclick="document.getElementById('f-date').value=''" type="button"
+            style="position:absolute;right:8px;background:none;border:none;cursor:pointer;color:var(--text-hint);font-size:16px;padding:0;line-height:1;display:flex;align-items:center"
+            title="Datum löschen">×</button>
+        </div>
+      </div>
     </div>
     <div class="form-row full">
       <div class="form-group"><label>Nächste Aktivität</label><input type="text" id="f-activity" placeholder="z.B. Demo-Call, Follow-up..."></div>
@@ -331,7 +338,7 @@ const PHASE_COLORS={
   'Termin':{dot:'#3B82F6',bg:'#EBF2FC',text:'#0E3D80',cardBg:'#BFDBFE'},
   'Warte auf Rückmeldung':{dot:'#22C55E',bg:'#E6F4EC',text:'#1A4D30',cardBg:'#BBF7D0'},
   'Nachgreifen':{dot:'#8B5CF6',bg:'#EDE9FE',text:'#4C1D95',cardBg:'#DDD6FE',highlightOwner:null},
-  'Grundriss erstellen':{dot:'#F97316',bg:'#FEF3C7',text:'#92400E',cardBg:'#FDE68A',highlightOwner:null},
+  'Neue Anfrage':{dot:'#A09E9A',bg:'#F0EEE9',text:'#6B6A66',cardBg:null,highlightOwner:null},
   'Pause':{dot:'#9CA3AF',bg:'#F3F4F6',text:'#4B5563',cardBg:'#E5E7EB',highlightOwner:null},
   'Gewonnen':{dot:'#22C55E',bg:'#E6F4EC',text:'#1A4D30',cardBg:null},
   'Verloren':{dot:'#EF4444',bg:'#FCEAEA',text:'#7A1A1A',cardBg:null},
@@ -679,7 +686,7 @@ function render(){
   const filtered=getFiltered();
   const el=document.getElementById('main-view');
   if(currentView==='pipeline'){
-    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Termin','Grundriss über Michael','Grundriss erstellen','Angebot über Kevin','Warte auf Rückmeldung','Nachgreifen','Bearbeitung über Brigitte','Pause'];
+    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Neue Anfrage','Termin','Grundriss über Michael','Angebot über Kevin','Warte auf Rückmeldung','Nachgreifen','Bearbeitung über Brigitte','Pause'];
     let html='<div class="pipeline">';
     mainPhases.forEach(p=>{
       const c=PHASE_COLORS[p]||{dot:'#A09E9A'};
