@@ -691,7 +691,7 @@ function updateSearchClear(){
 
 function renderStats(){
   const f=getFiltered();
-  const vol=f.reduce((s,l)=>s+(parseFloat(l.value)||0),0);
+  const vol=f.filter(l=>l.phase!=='Pause').reduce((s,l)=>s+(parseFloat(l.value)||0),0);
   const won=f.filter(l=>l.phase==='Gewonnen').length;
   const open=f.filter(l=>!['Gewonnen','Verloren'].includes(l.phase)).length;
   const wr=f.length?Math.round(won/f.length*100):0;
