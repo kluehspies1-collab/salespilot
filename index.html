@@ -262,6 +262,7 @@ textarea{resize:vertical;min-height:85px}
         <option value="Warte auf Rückmeldung">Warte auf Rückmeldung</option>
         <option value="Nachgreifen">Nachgreifen</option>
         <option value="Neue Anfrage">Neue Anfrage</option>
+        <option value="Grundstücksuche">Grundstücksuche</option>
         <option value="Pause">Pause</option>
         <option value="Gewonnen">Gewonnen</option>
         <option value="Verloren">Verloren</option>
@@ -324,6 +325,7 @@ textarea{resize:vertical;min-height:85px}
           <option>Warte auf Rückmeldung</option>
           <option>Nachgreifen</option>
           <option>Neue Anfrage</option>
+          <option>Grundstücksuche</option>
           <option>Pause</option>
           <option>Gewonnen</option>
           <option>Verloren</option>
@@ -403,6 +405,7 @@ const PHASE_COLORS={
   'Warte auf Rückmeldung':{dot:'#22C55E',bg:'#E6F4EC',text:'#1A4D30',cardBg:'#BBF7D0'},
   'Nachgreifen':{dot:'#8B5CF6',bg:'#EDE9FE',text:'#4C1D95',cardBg:'#DDD6FE',highlightOwner:null},
   'Neue Anfrage':{dot:'#A09E9A',bg:'#F0EEE9',text:'#6B6A66',cardBg:null,highlightOwner:null},
+  'Grundstücksuche':{dot:'#9CA3AF',bg:'#F3F4F6',text:'#4B5563',cardBg:'#E5E7EB',highlightOwner:null},
   'Pause':{dot:'#9CA3AF',bg:'#F3F4F6',text:'#4B5563',cardBg:'#E5E7EB',highlightOwner:null},
   'Gewonnen':{dot:'#22C55E',bg:'#E6F4EC',text:'#1A4D30',cardBg:null},
   'Verloren':{dot:'#EF4444',bg:'#FCEAEA',text:'#7A1A1A',cardBg:null},
@@ -691,7 +694,7 @@ function updateSearchClear(){
 
 function renderStats(){
   const f=getFiltered();
-  const vol=f.filter(l=>l.phase!=='Pause').reduce((s,l)=>s+(parseFloat(l.value)||0),0);
+  const vol=f.filter(l=>l.phase!=='Pause'&&l.phase!=='Grundstücksuche').reduce((s,l)=>s+(parseFloat(l.value)||0),0);
   const won=f.filter(l=>l.phase==='Gewonnen').length;
   const open=f.filter(l=>!['Gewonnen','Verloren'].includes(l.phase)).length;
   const wr=f.length?Math.round(won/f.length*100):0;
@@ -753,7 +756,7 @@ function render(){
   const filtered=getFiltered();
   const el=document.getElementById('main-view');
   if(currentView==='pipeline'){
-    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Neue Anfrage','Termin','Grundriss über Michael','Angebot über Kevin','Warte auf Rückmeldung','Nachgreifen','Bearbeitung über Brigitte','Pause'];
+    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Neue Anfrage','Termin','Grundriss über Michael','Angebot über Kevin','Warte auf Rückmeldung','Nachgreifen','Bearbeitung über Brigitte','Grundstücksuche','Pause'];
     let html='<div class="pipeline">';
     mainPhases.forEach(p=>{
       const c=PHASE_COLORS[p]||{dot:'#A09E9A'};
