@@ -719,10 +719,20 @@ function renderCard(l){
   // Phase-fixed colors
   if(l.phase==='Pause'){
     cardBg='background:#E5E7EB;border-color:#D1D5DB;'; // always grey
+  } else if(l.phase==='Grundstücksuche'){
+    cardBg='background:#E5E7EB;border-color:#D1D5DB;'; // always grey
   } else if(l.phase==='Termin'){
     cardBg='background:#DBEAFE;border-color:#BFDBFE;'; // always soft blue
   } else if(l.phase==='Warte auf Rückmeldung'){
     cardBg='background:#DCFCE7;border-color:#BBF7D0;'; // always soft green
+  } else if(l.phase==='Nachgreifen'||l.phase==='Kevin to do'){
+    // No color unless date is today
+    if(l.date){
+      const today=new Date(); today.setHours(0,0,0,0);
+      const due=new Date(l.date); due.setHours(0,0,0,0);
+      const diff=Math.ceil((due-today)/(1000*60*60*24));
+      if(diff===0) cardBg='background:#FEF08A;border-color:#FDE047;'; // today = yellow
+    }
   } else if(l.date){
     // Date-based coloring for all other phases
     const today=new Date(); today.setHours(0,0,0,0);
