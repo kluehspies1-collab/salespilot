@@ -255,12 +255,13 @@ textarea{resize:vertical;min-height:85px}
       </div>
       <select class="filter-select" id="filter-phase" onchange="render()">
         <option value="">Alle Phasen</option>
-        <option value="Bearbeitung über Brigitte">Bearb. Brigitte</option>
-        <option value="Grundriss über Michael">Grundriss Michael</option>
-        <option value="Angebot über Kevin">Angebot Kevin</option>
+        <option value="Brigitte to do">Bearb. Brigitte</option>
+        <option value="Michael to do">Grundriss Michael</option>
+        <option value="Kevin to do">Angebot Kevin</option>
         <option value="Termin">Termin</option>
         <option value="Warte auf Rückmeldung">Warte auf Rückmeldung</option>
         <option value="Nachgreifen">Nachgreifen</option>
+        <option value="Abschlussbereit">Abschlussbereit</option>
         <option value="Neue Anfrage">Neue Anfrage</option>
         <option value="Grundstücksuche">Grundstücksuche</option>
         <option value="Pause">Pause</option>
@@ -318,12 +319,13 @@ textarea{resize:vertical;min-height:85px}
     <div class="form-row">
       <div class="form-group"><label>Phase</label>
         <select id="f-phase">
-          <option>Bearbeitung über Brigitte</option>
-          <option>Grundriss über Michael</option>
-          <option>Angebot über Kevin</option>
+          <option>Brigitte to do</option>
+          <option>Michael to do</option>
+          <option>Kevin to do</option>
           <option>Termin</option>
           <option>Warte auf Rückmeldung</option>
           <option>Nachgreifen</option>
+          <option>Abschlussbereit</option>
           <option>Neue Anfrage</option>
           <option>Grundstücksuche</option>
           <option>Pause</option>
@@ -398,12 +400,13 @@ const SUPABASE_URL = 'https://xbwpvhmskxajwkwofngi.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhid3B2aG1za3hhandrd29mbmdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyMTE5MDAsImV4cCI6MjA5NTc4NzkwMH0.Cqg0wB8nRzHVQSVmoVAGeMHTJi-SoSyeiDgUbNnrJ2c';
 
 const PHASE_COLORS={
-  'Bearbeitung über Brigitte':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Brigitte'},
-  'Grundriss über Michael':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Michael'},
-  'Angebot über Kevin':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Kevin'},
+  'Brigitte to do':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Brigitte'},
+  'Michael to do':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Michael'},
+  'Kevin to do':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Kevin'},
   'Termin':{dot:'#3B82F6',bg:'#EBF2FC',text:'#0E3D80',cardBg:'#BFDBFE'},
   'Warte auf Rückmeldung':{dot:'#22C55E',bg:'#E6F4EC',text:'#1A4D30',cardBg:'#BBF7D0'},
   'Nachgreifen':{dot:'#8B5CF6',bg:'#EDE9FE',text:'#4C1D95',cardBg:'#DDD6FE',highlightOwner:null},
+  'Abschlussbereit':{dot:'#F59E0B',bg:'#FEF3C7',text:'#92400E',cardBg:'#FDE68A',highlightOwner:null},
   'Neue Anfrage':{dot:'#A09E9A',bg:'#F0EEE9',text:'#6B6A66',cardBg:null,highlightOwner:null},
   'Grundstücksuche':{dot:'#9CA3AF',bg:'#F3F4F6',text:'#4B5563',cardBg:'#E5E7EB',highlightOwner:null},
   'Pause':{dot:'#9CA3AF',bg:'#F3F4F6',text:'#4B5563',cardBg:'#E5E7EB',highlightOwner:null},
@@ -756,7 +759,7 @@ function render(){
   const filtered=getFiltered();
   const el=document.getElementById('main-view');
   if(currentView==='pipeline'){
-    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Neue Anfrage','Termin','Grundriss über Michael','Angebot über Kevin','Warte auf Rückmeldung','Nachgreifen','Bearbeitung über Brigitte','Grundstücksuche','Pause'];
+    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Abschlussbereit','Neue Anfrage','Termin','Michael to do','Kevin to do','Nachgreifen','Warte auf Rückmeldung','Brigitte to do','Grundstücksuche','Pause'];
     let html='<div class="pipeline">';
     mainPhases.forEach(p=>{
       const c=PHASE_COLORS[p]||{dot:'#A09E9A'};
