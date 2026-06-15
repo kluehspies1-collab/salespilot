@@ -759,7 +759,7 @@ function render(){
   const filtered=getFiltered();
   const el=document.getElementById('main-view');
   if(currentView==='pipeline'){
-    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Abschlussbereit','Neue Anfrage','Termin','Michael to do','Kevin to do','Nachgreifen','Warte auf Rückmeldung','Brigitte to do','Grundstücksuche','Pause'];
+    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Abschlussbereit','Termin','Michael to do','Kevin to do','Nachgreifen','Warte auf Rückmeldung','Brigitte to do','Neue Anfrage','Grundstücksuche','Pause'];
     let html='<div class="pipeline">';
     mainPhases.forEach(p=>{
       const c=PHASE_COLORS[p]||{dot:'#A09E9A'};
