@@ -866,6 +866,8 @@ function openModal(id){
     document.getElementById('f-region').value=userRole.region==='regensburg'?'regensburg':'nuernberg';
     delBtn.style.display='none';
   }
+  const noteTA = document.getElementById('f-new-note');
+  if(noteTA) noteTA.value='';
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('f-firstname').focus(),80);
 }
