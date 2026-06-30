@@ -717,6 +717,7 @@ function renderCard(l){
   const showRegion=userRole.role==='admin'||userRole.region==='both';
   const pc=PHASE_COLORS[l.phase]||{dot:'#A09E9A',bg:'#F0EEE9',text:'#6B6A66',cardBg:null};
   const owners=(l.owner||'').split(',').map(s=>s.trim());
+  const neutralUser = userRole && (userRole.name==='Johann' || userRole.name==='Florian');
   let cardBg='';
   // Phase-fixed colors
   if(l.phase==='Pause'){
@@ -727,7 +728,7 @@ function renderCard(l){
     cardBg='background:#DBEAFE;border-color:#BFDBFE;'; // always soft blue
   } else if(l.phase==='Warte auf Rückmeldung'){
     cardBg='background:#DCFCE7;border-color:#BBF7D0;'; // always soft green
-  } else if(l.phase==='Nachgreifen'||l.phase==='Kevin to do'){
+  } else if(l.phase==='Kevin to do'){
     // No color unless date is today
     if(l.date){
       const today=new Date(); today.setHours(0,0,0,0);
@@ -751,6 +752,7 @@ function renderCard(l){
       cardBg=`background:${pc.cardBg};border-color:${pc.cardBg};`;
     }
   }
+  if(neutralUser) cardBg='';
   return`<div class="lead-card" style="${cardBg}" onclick="openModal('${l.id}')">
     <div class="lead-top">
       <div class="lead-avatar" style="background:${av.bg};color:${av.text}">${initials(l.firstname,l.lastname)}</div>
