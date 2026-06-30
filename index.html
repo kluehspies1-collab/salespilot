@@ -605,6 +605,31 @@ async function api(method,path,body){
   }finally{setSyncing(false);}
 }
 
+async function autoUpdateOverdueDates(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const yyyy=today.getFullYear();
+  const mm=String(today.getMonth()+1).padStart(2,'0');
+  const dd=String(today.getDate()).padStart(2,'0');
+  const todayStr=`${yyyy}-${mm}-${dd}`;
+
+  const overdue=leads.filter(l=>{
+    if(!l.date) return false;
+    const due=new Date(l.date); due.setHours(0,0,0,0);
+    return due<today;
+  });
+
+  if(!overdue.length) return;
+
+  for(const l of overdue){
+    try{
+      await api('PATCH','leads?id=eq.'+l.id,{date:todayStr});
+      const idx=leads.findIndex(x=>x.id===l.id);
+      if(idx>-1) leads[idx].date=todayStr;
+    }catch(e){}
+  }
+  render();
+}
+
 async function loadLeads(){
   setLoading(true);
   try{
@@ -616,6 +641,7 @@ async function loadLeads(){
     leads=(data||[]).filter(l=>canSeeRegion(l.region||'nuernberg'));
     loadNotifications();
     checkNewNotes();
+    if(canEdit()) await autoUpdateOverdueDates();
     // Sort by date: leads with upcoming date first, then no date
     leads.sort((a,b)=>{
       if(a.date&&b.date) return new Date(a.date)-new Date(b.date);
