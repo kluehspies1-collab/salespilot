@@ -613,7 +613,7 @@ async function autoUpdateOverdueDates(){
   const todayStr=`${yyyy}-${mm}-${dd}`;
 
   // Auto-move overdue phases -> "Nachgreifen"
-  const autoMovePhases = ['Warte auf Rückmeldung','Grundstücksuche','Pause'];
+  const autoMovePhases = ['Warte auf Rückmeldung','Grundstücksuche','Pause','Neue Anfrage'];
   const autoMoveOverdue = leads.filter(l=>{
     if(!l.date || !autoMovePhases.includes(l.phase)) return false;
     const due=new Date(l.date); due.setHours(0,0,0,0);
