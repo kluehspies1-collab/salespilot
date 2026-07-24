@@ -612,13 +612,30 @@ async function autoUpdateOverdueDates(){
   const dd=String(today.getDate()).padStart(2,'0');
   const todayStr=`${yyyy}-${mm}-${dd}`;
 
+  // Auto-move overdue phases -> "Nachgreifen"
+  const autoMovePhases = ['Warte auf Rückmeldung','Grundstücksuche','Pause'];
+  const autoMoveOverdue = leads.filter(l=>{
+    if(!l.date || !autoMovePhases.includes(l.phase)) return false;
+    const due=new Date(l.date); due.setHours(0,0,0,0);
+    return due<today;
+  });
+  for(const l of autoMoveOverdue){
+    try{
+      await api('PATCH','leads?id=eq.'+l.id,{phase:'Nachgreifen',date:todayStr});
+      const idx=leads.findIndex(x=>x.id===l.id);
+      if(idx>-1){ leads[idx].phase='Nachgreifen'; leads[idx].date=todayStr; }
+    }catch(e){}
+  }
+  const warteOverdue = autoMoveOverdue; // alias for check below
+
+  // Update remaining overdue dates to today (other phases)
   const overdue=leads.filter(l=>{
-    if(!l.date) return false;
+    if(!l.date || l.phase==='Warte auf Rückmeldung') return false;
     const due=new Date(l.date); due.setHours(0,0,0,0);
     return due<today;
   });
 
-  if(!overdue.length) return;
+  if(!overdue.length && !autoMoveOverdue.length) return;
 
   for(const l of overdue){
     try{
@@ -745,39 +762,36 @@ function renderCard(l){
   const owners=(l.owner||'').split(',').map(s=>s.trim());
   const neutralUser = userRole && (userRole.name==='Johann' || userRole.name==='Florian');
   let cardBg='';
-  // Phase-fixed colors
-  if(l.phase==='Pause'){
+  // Phase-fixed colors (only Pause/Grundstücksuche always grey, rest depend on date)
+  if(l.phase==='Pause'||l.phase==='Grundstücksuche'){
     cardBg='background:#E5E7EB;border-color:#D1D5DB;'; // always grey
-  } else if(l.phase==='Grundstücksuche'){
-    cardBg='background:#E5E7EB;border-color:#D1D5DB;'; // always grey
-  } else if(l.phase==='Termin'){
-    cardBg='background:#DBEAFE;border-color:#BFDBFE;'; // always soft blue
-  } else if(l.phase==='Warte auf Rückmeldung'){
-    cardBg='background:#DCFCE7;border-color:#BBF7D0;'; // always soft green
-  } else if(l.phase==='Kevin to do'){
-    // No color unless date is today
-    if(l.date){
-      const today=new Date(); today.setHours(0,0,0,0);
-      const due=new Date(l.date); due.setHours(0,0,0,0);
-      const diff=Math.ceil((due-today)/(1000*60*60*24));
-      if(diff===0) cardBg='background:#FEF08A;border-color:#FDE047;'; // today = yellow
-    }
   } else if(l.date){
-    // Date-based coloring for all other phases
     const today=new Date(); today.setHours(0,0,0,0);
     const due=new Date(l.date); due.setHours(0,0,0,0);
     const diff=Math.ceil((due-today)/(1000*60*60*24));
-    if(diff<=0)       cardBg='background:#FEE2E2;border-color:#FECACA;'; // overdue - soft red
-    else if(diff<=3)  cardBg='background:#FEF08A;border-color:#FDE047;'; // 1-3 days - yellow
-    else if(diff<=5)  cardBg='background:#FEF9C3;border-color:#FEF08A;'; // 4-5 days - soft yellow
-    // 6+ days = no color (cardBg stays empty)
-  } else if(pc.cardBg){
+    if(l.phase==='Termin'){
+      cardBg='background:#DBEAFE;border-color:#BFDBFE;'; // always soft blue if date set
+    } else if(l.phase==='Warte auf Rückmeldung'){
+      cardBg='background:#DCFCE7;border-color:#BBF7D0;'; // always soft green if date set
+    } else if(l.phase==='Kevin to do'){
+      if(diff===0) cardBg='background:#FEF08A;border-color:#FDE047;'; // today = yellow
+      // else white (no color)
+    } else {
+      // Normal date-based coloring for all other phases
+      if(diff<=0)       cardBg='background:#FEE2E2;border-color:#FECACA;'; // overdue - soft red
+      else if(diff<=3)  cardBg='background:#FEF08A;border-color:#FDE047;'; // 1-3 days - yellow
+      else if(diff<=5)  cardBg='background:#FEF9C3;border-color:#FEF08A;'; // 4-5 days - soft yellow
+      // 6+ days = no color
+    }
+  } else if(pc.cardBg && l.phase!=='Termin' && l.phase!=='Warte auf Rückmeldung'){
+    // Phase highlight colors only if no date and phase has own color
     if(pc.highlightOwner){
       if(owners.includes(pc.highlightOwner)) cardBg=`background:${pc.cardBg};border-color:${pc.cardBg};`;
     } else {
       cardBg=`background:${pc.cardBg};border-color:${pc.cardBg};`;
     }
   }
+  // No date + no special phase = white (cardBg stays empty)
   if(neutralUser) cardBg='';
   return`<div class="lead-card" style="${cardBg}" onclick="openModal('${l.id}')">
     <div class="lead-top">
