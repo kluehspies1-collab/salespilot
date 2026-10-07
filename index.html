@@ -257,6 +257,7 @@ textarea{resize:vertical;min-height:85px}
         <option value="">Alle Phasen</option>
         <option value="Brigitte to do">Bearb. Brigitte</option>
         <option value="Michael to do">Grundriss Michael</option>
+        <option value="Architekt">Architekt</option>
         <option value="Kevin to do">Angebot Kevin</option>
         <option value="Termin">Termin</option>
         <option value="Warte auf Rückmeldung">Warte auf Rückmeldung</option>
@@ -321,6 +322,7 @@ textarea{resize:vertical;min-height:85px}
         <select id="f-phase">
           <option>Brigitte to do</option>
           <option>Michael to do</option>
+          <option>Architekt</option>
           <option>Kevin to do</option>
           <option>Termin</option>
           <option>Warte auf Rückmeldung</option>
@@ -403,6 +405,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const PHASE_COLORS={
   'Brigitte to do':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Brigitte'},
   'Michael to do':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Michael'},
+  'Architekt':{dot:'#0D9488',bg:'#CCFBF1',text:'#115E59',cardBg:'#99F6E4',highlightOwner:null},
   'Kevin to do':{dot:'#EAB308',bg:'#FEF9C3',text:'#713F12',cardBg:'#FEF08A',highlightOwner:'Kevin'},
   'Termin':{dot:'#3B82F6',bg:'#EBF2FC',text:'#0E3D80',cardBg:'#BFDBFE'},
   'Warte auf Rückmeldung':{dot:'#22C55E',bg:'#E6F4EC',text:'#1A4D30',cardBg:'#BBF7D0'},
@@ -813,7 +816,7 @@ function render(){
   const filtered=getFiltered();
   const el=document.getElementById('main-view');
   if(currentView==='pipeline'){
-    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Abschlussbereit','Termin','Michael to do','Kevin to do','Nachgreifen','Warte auf Rückmeldung','Brigitte to do','Neue Anfrage','Grundstücksuche','Pause'];
+    const mainPhases=userRole.role==='readonly'?['Gewonnen']:['Abschlussbereit','Termin','Michael to do','Architekt','Kevin to do','Nachgreifen','Warte auf Rückmeldung','Brigitte to do','Neue Anfrage','Grundstücksuche','Pause'];
     let html='<div class="pipeline">';
     mainPhases.forEach(p=>{
       const c=PHASE_COLORS[p]||{dot:'#A09E9A'};
